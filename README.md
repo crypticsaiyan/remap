@@ -6,6 +6,8 @@
 
 VIA is a powerful, open-source web-based interface for configuring your [QMK](https://qmk.fm)-powered mechanical keyboard. It allows you to customize your keymaps, create macros, and adjust RGB settings (if it has RGB) on the fly, without needing to recompile your keyboard's firmware. This makes keyboard customization easier and more accessible for everyone.
 
+**This fork ("remap") adds [WebMCP](https://webmachinelearning.github.io/webmcp/) support**, exposing keymap, lighting, macro, and layout tools to AI agents so a human and an agent can configure a keyboard together in the same UI. See [WEBMCP.md](./WEBMCP.md) for the full tool catalog, architecture, and how to test it.
+
 ## Getting VIA to support your keyboard
 
 Are you a keyboard maker or a developer interested in adding support for your keyboard? We welcome contributions to the VIA project!

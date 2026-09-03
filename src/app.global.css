@@ -16,7 +16,7 @@ body {
 body {
   position: relative;
   color: white;
-  background-color: #232c39;
+  background-color: #1b1a17;
   font-family: 'Fira Sans', Helvetica, Helvetica Neue, Arial, serif;
   font-weight: 300;
   overflow: hidden;
@@ -52,17 +52,23 @@ a:hover {
   cursor: pointer;
 }
 :root {
-  --color_error: #d15e5e;
-  --color_light-grey: #d9d9d9;
-  --color_medium-grey: #707070;
+  /*
+   * remap's own warm-graphite palette (a copper accent instead of upstream
+   * VIA's default navy/pink) -- see src/utils/themes.ts's REMAP entry for
+   * the matching --color_accent. Same variable names as upstream, so every
+   * component that reads them is untouched; only the values changed.
+   */
+  --color_error: #c9503f;
+  --color_light-grey: #d6d0c4;
+  --color_medium-grey: #8a8377;
 
-  --color_dark-grey: #414141;
-  --color_light-jet: #222;
-  --color_jet: #1d1b1b;
-  --color_warm-white: #fffbfb;
-  --color_tinge: #c7c3c3;
-  --color_tinge-light: #ebe4e4;
-  --color_tinge-dark: #796c6c;
+  --color_dark-grey: #3a3733;
+  --color_light-jet: #211f1c;
+  --color_jet: #141311;
+  --color_warm-white: #f5f1e8;
+  --color_tinge: #ddd6c7;
+  --color_tinge-light: #ece7da;
+  --color_tinge-dark: #8a8377;
   --box-shadow-keycap: inset -1px -1px 0 rgb(0 0 0 / 20%),
     inset 1px 1px 0 rgb(255 255 255 / 20%);
   --box-shadow-keyboard: var(--box-shadow-keycap);

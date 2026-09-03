@@ -9,6 +9,25 @@ export type Theme = {
 
 export const THEMES = {
   ...{
+    // remap's own default keycap/accent theme -- a warm graphite board with
+    // a copper accent, distinct from upstream VIA's default navy-and-pink
+    // OLIVIA_DARK. Set as the default in src/utils/device-store.ts; the rest
+    // of the built-in themes below are kept so switching in Settings still
+    // works exactly as it always has.
+    REMAP: {
+      alpha: {
+        c: '#3a3733',
+        t: '#e9c9a0',
+      },
+      mod: {
+        c: '#2a2825',
+        t: '#c9a876',
+      },
+      accent: {
+        c: '#c9622f',
+        t: '#1b1a17',
+      },
+    },
     OLIVIA_DARK: {
       alpha: {
         c: '#363434',
