@@ -41,7 +41,12 @@ import {getConnectedDevices, getSupportedIds} from 'src/store/devicesSlice';
 import {isElectron} from 'src/utils/running-context';
 import {useAppDispatch} from 'src/store/hooks';
 import {MenuTooltip} from '../inputs/tooltip';
-import {getRenderMode, getSelectedTheme} from 'src/store/settingsSlice';
+import {
+  getActiveConfigureTabTitle,
+  getRenderMode,
+  getSelectedTheme,
+  setActiveConfigureTabTitle,
+} from 'src/store/settingsSlice';
 import {useTranslation} from 'react-i18next';
 
 const MenuContainer = styled.div`
@@ -251,8 +256,16 @@ const ConfigureGrid = () => {
   const {t} = useTranslation();
   const dispatch = useDispatch();
 
-  const [selectedRow, setRow] = useState(0);
+  // Sub-tab selection is kept in Redux (rather than local state) so the
+  // WebMCP `switch_configure_tab` tool can drive it from outside React.
   const KeyboardRows = getRowsForKeyboard();
+  const activeConfigureTabTitle = useAppSelector(getActiveConfigureTabTitle);
+  const matchedRow = KeyboardRows.findIndex(
+    (row) => row.Title === activeConfigureTabTitle,
+  );
+  const selectedRow = matchedRow === -1 ? 0 : matchedRow;
+  const setRow = (idx: number) =>
+    dispatch(setActiveConfigureTabTitle(KeyboardRows[idx]?.Title ?? null));
   const SelectedPane = KeyboardRows[selectedRow]?.Pane;
   const selectedTitle = KeyboardRows[selectedRow]?.Title;
 

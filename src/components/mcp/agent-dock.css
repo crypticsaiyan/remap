@@ -1,0 +1,474 @@
+/*
+ * A deliberately distinct visual language for the agent-facing surfaces
+ * (this directory only) -- a light, functional "instrument panel" dropped
+ * onto VIA's dark chrome, so it reads as a separate layer bolted on for an
+ * agent to use rather than another VIA settings pane. Every color here means
+ * a real state (proposed / approved / written / conflict), not decoration.
+ */
+
+.mcpdock {
+  --mcpdock-ground: #f4f3f0;
+  --mcpdock-surface: #ffffff;
+  --mcpdock-edge: #dedad2;
+  --mcpdock-ink: #1c1b19;
+  --mcpdock-ink-dim: #6f6b62;
+  --mcpdock-ink-faint: #a39e93;
+
+  /* Matches the app's own accent (src/utils/themes.ts's REMAP theme) so the
+     agent layer and the rest of the UI read as one brand, not two. */
+  --mcpdock-accent: #c9622f;
+  --mcpdock-accent-ink: #ffffff;
+
+  --mcpdock-proposed: #a5721b;
+  --mcpdock-proposed-bg: #fbf2e0;
+  --mcpdock-approved: #2f6f4f;
+  --mcpdock-approved-bg: #e9f3ec;
+  --mcpdock-written: #2c5f9e;
+  --mcpdock-written-bg: #e7eef8;
+  --mcpdock-conflict: #ac342c;
+  --mcpdock-conflict-bg: #fbeae8;
+
+  --mcpdock-sans:
+    'Fira Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mcpdock-mono:
+    ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  font-family: var(--mcpdock-sans);
+  color: var(--mcpdock-ink);
+}
+
+.mcpdock * {
+  box-sizing: border-box;
+}
+
+.mcpdock-mono {
+  font-family: var(--mcpdock-mono);
+}
+
+/* ---- docked rail ----------------------------------------------------
+   A persistent right-hand column, not a floating popup: it stays part of
+   the page's fixed chrome the whole time, and collapses to a thin toggle
+   strip rather than vanishing, so a human always knows the agent layer is
+   there even before anything has happened. (Overlays the app rather than
+   reflowing it -- VIA's own keyboard canvas is hard-coded to 100vw for its
+   page-swipe transitions, so genuinely reflowing it is out of scope here.)
+*/
+
+.mcpdock-root {
+  font-size: 13px;
+}
+
+.mcpdock-rail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  width: min(340px, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--mcpdock-ground);
+  border-left: 1px solid var(--mcpdock-edge);
+  box-shadow: -12px 0 32px -18px rgba(20, 18, 14, 0.45);
+}
+
+.mcpdock-rail-collapsed {
+  width: auto;
+  background: transparent;
+  border-left: none;
+  box-shadow: none;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding-top: 18px;
+}
+
+.mcpdock-rail-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border: 1px solid var(--mcpdock-edge);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  background: var(--mcpdock-surface);
+  color: var(--mcpdock-ink);
+  cursor: pointer;
+  box-shadow: -8px 0 20px -12px rgba(20, 18, 14, 0.35);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mcpdock-rail-toggle-label {
+  writing-mode: vertical-rl;
+  letter-spacing: 0.03em;
+}
+
+.mcpdock-rail-collapse {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--mcpdock-edge);
+  border-radius: 6px;
+  background: var(--mcpdock-surface);
+  color: var(--mcpdock-ink-dim);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+.mcpdock-rail-collapse:hover {
+  color: var(--mcpdock-ink);
+}
+
+.mcpdock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mcpdock-dot[data-state='native'] {
+  background: var(--mcpdock-approved);
+  box-shadow: 0 0 0 3px var(--mcpdock-approved-bg);
+}
+
+.mcpdock-dot[data-state='absent'] {
+  background: var(--mcpdock-ink-faint);
+}
+
+.mcpdock-count {
+  font-family: var(--mcpdock-mono);
+  font-size: 10.5px;
+  color: var(--mcpdock-accent);
+  background: var(--mcpdock-accent-wash, var(--mcpdock-proposed-bg));
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+
+.mcpdock-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--mcpdock-edge);
+  background: var(--mcpdock-surface);
+  flex-shrink: 0;
+}
+
+.mcpdock-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mcpdock-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  font-size: 13px;
+  margin: 0 0 2px;
+}
+
+.mcpdock-subtitle {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--mcpdock-ink-dim);
+  line-height: 1.5;
+}
+
+.mcpdock-flagline {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.mcpdock-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--mcpdock-edge);
+  background: var(--mcpdock-surface);
+  flex-shrink: 0;
+}
+
+.mcpdock-tab {
+  flex: 1;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mcpdock-ink-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.mcpdock-tab[data-active='true'] {
+  color: var(--mcpdock-accent);
+  border-bottom-color: var(--mcpdock-accent);
+}
+
+.mcpdock-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.mcpdock-empty {
+  padding: 20px 14px;
+  color: var(--mcpdock-ink-faint);
+  font-size: 12px;
+}
+
+/* ---- buttons --------------------------------------------------------- */
+
+.mcpdock-btn {
+  border: 1px solid var(--mcpdock-edge);
+  border-radius: 6px;
+  padding: 6px 12px;
+  background: var(--mcpdock-surface);
+  color: var(--mcpdock-ink);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mcpdock-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.mcpdock-btn-primary {
+  border-color: var(--mcpdock-accent);
+  background: var(--mcpdock-accent);
+  color: var(--mcpdock-accent-ink);
+}
+
+/* ---- activity log ------------------------------------------------------ */
+
+.mcpdock-entry {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--mcpdock-edge);
+}
+
+.mcpdock-entry-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mcpdock-entry-status {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mcpdock-entry-status[data-status='pending'] {
+  background: var(--mcpdock-proposed);
+}
+.mcpdock-entry-status[data-status='success'] {
+  background: var(--mcpdock-approved);
+}
+.mcpdock-entry-status[data-status='error'] {
+  background: var(--mcpdock-conflict);
+}
+.mcpdock-entry-status[data-status='denied'] {
+  background: var(--mcpdock-ink-faint);
+}
+
+.mcpdock-entry-name {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.mcpdock-entry-time {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--mcpdock-ink-faint);
+}
+
+.mcpdock-entry-detail {
+  margin: 5px 0 0;
+  font-size: 10.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--mcpdock-ink-dim);
+  max-height: 90px;
+  overflow-y: auto;
+}
+
+/* ---- console ------------------------------------------------------------ */
+
+.mcpdock-console {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mcpdock-select,
+.mcpdock-textarea {
+  width: 100%;
+  border: 1px solid var(--mcpdock-edge);
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-size: 12px;
+  background: var(--mcpdock-surface);
+  color: var(--mcpdock-ink);
+}
+
+.mcpdock-textarea {
+  font-family: var(--mcpdock-mono);
+  min-height: 76px;
+  resize: vertical;
+}
+
+.mcpdock-console-desc {
+  font-size: 11px;
+  color: var(--mcpdock-ink-dim);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.mcpdock-result {
+  border: 1px solid var(--mcpdock-edge);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--mcpdock-surface);
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.mcpdock-result[data-ok='false'] {
+  border-color: var(--mcpdock-conflict);
+  background: var(--mcpdock-conflict-bg);
+  color: var(--mcpdock-conflict);
+}
+
+/* ---- proposal review sheet ----------------------------------------------- */
+
+.mcpdock-sheet {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 41;
+  margin: 0 auto;
+  max-width: 760px;
+  background: var(--mcpdock-ground);
+  border: 1px solid var(--mcpdock-edge);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px -16px rgba(20, 18, 14, 0.55);
+  overflow: hidden;
+}
+
+.mcpdock-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 18px;
+  background: var(--mcpdock-surface);
+  border-bottom: 1px solid var(--mcpdock-edge);
+}
+
+.mcpdock-sheet-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.mcpdock-sheet-rationale {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mcpdock-ink-dim);
+  line-height: 1.5;
+}
+
+.mcpdock-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.mcpdock-status-badge[data-status='proposed'] {
+  color: var(--mcpdock-proposed);
+  background: var(--mcpdock-proposed-bg);
+}
+.mcpdock-status-badge[data-status='approved'] {
+  color: var(--mcpdock-approved);
+  background: var(--mcpdock-approved-bg);
+}
+.mcpdock-status-badge[data-status='written'] {
+  color: var(--mcpdock-written);
+  background: var(--mcpdock-written-bg);
+}
+.mcpdock-status-badge[data-status='rejected'],
+.mcpdock-status-badge[data-status='reverted'] {
+  color: var(--mcpdock-ink-dim);
+  background: var(--mcpdock-edge);
+}
+
+.mcpdock-sheet-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mcpdock-difftable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.mcpdock-difftable th {
+  text-align: left;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--mcpdock-ink-faint);
+  padding: 8px 14px 6px;
+  font-weight: 600;
+}
+
+.mcpdock-difftable td {
+  padding: 7px 14px;
+  border-top: 1px solid var(--mcpdock-edge);
+  vertical-align: top;
+}
+
+.mcpdock-difftable .mcpdock-from {
+  color: var(--mcpdock-ink-faint);
+  text-decoration: line-through;
+}
+
+.mcpdock-difftable .mcpdock-to {
+  color: var(--mcpdock-written);
+  font-weight: 700;
+}
+
+.mcpdock-difftable-wrap {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.mcpdock-warning {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 18px;
+  font-size: 11.5px;
+  background: var(--mcpdock-proposed-bg);
+  color: var(--mcpdock-proposed);
+  border-top: 1px solid var(--mcpdock-edge);
+}

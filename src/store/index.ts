@@ -11,6 +11,9 @@ import errorsReducer from './errorsSlice';
 import {errorsListenerMiddleware} from './errorsListener';
 import firmwareReducer from './firmwareSlice';
 import definitionNameReducer from './definitionNameSlice';
+import mcpActivityReducer from './mcpActivitySlice';
+import mcpConfirmReducer from './mcpConfirmSlice';
+import mcpProposalReducer from './mcpProposalSlice';
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +28,9 @@ export const store = configureStore({
     errors: errorsReducer,
     firmware: firmwareReducer,
     definitionName: definitionNameReducer,
+    mcpActivity: mcpActivityReducer,
+    mcpConfirm: mcpConfirmReducer,
+    mcpProposal: mcpProposalReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(errorsListenerMiddleware.middleware),

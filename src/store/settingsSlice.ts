@@ -19,6 +19,7 @@ type SettingsState = Settings & {
   restartRequired: boolean;
   allowGlobalHotKeys: boolean;
   showDesignTabConfirmationNotice: boolean;
+  activeConfigureTabTitle: string | null;
 };
 
 const initialState: SettingsState = {
@@ -27,6 +28,7 @@ const initialState: SettingsState = {
   restartRequired: false,
   allowGlobalHotKeys: false,
   showDesignTabConfirmationNotice: false,
+  activeConfigureTabTitle: null,
 };
 
 const toggleBool = (
@@ -123,6 +125,12 @@ const settingsSlice = createSlice({
       state.hostKeyboardLayout = action.payload;
       setSettings(state);
     },
+    setActiveConfigureTabTitle: (
+      state,
+      action: PayloadAction<string | null>,
+    ) => {
+      state.activeConfigureTabTitle = action.payload;
+    },
   },
 });
 
@@ -143,6 +151,7 @@ export const {
   updateThemeName,
   updateDesignDefinitionVersion,
   updateHostKeyboardLayout,
+  setActiveConfigureTabTitle,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
@@ -186,3 +195,6 @@ export const getSelectedSRGBTheme = createSelector(
 
 export const getHostKeyboardLayout = (state: RootState) =>
   state.settings.hostKeyboardLayout;
+
+export const getActiveConfigureTabTitle = (state: RootState) =>
+  state.settings.activeConfigureTabTitle;
