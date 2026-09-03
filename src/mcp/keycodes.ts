@@ -16,7 +16,22 @@ import {
 
 export function keycodeStringToByte(code: string): number {
   const {basicKeyToByte} = getBasicKeyToByte(store.getState());
-  return getByteForCode(code, basicKeyToByte);
+  const byte = getByteForCode(code, basicKeyToByte);
+  // getByteForCode's advanced-keycode parser (src/utils/advanced-keys.ts)
+  // returns 0 -- KC_NO, "disabled key" -- for any macro syntax it doesn't
+  // recognize, rather than failing. That's silent data loss for a tool
+  // call: an agent asking for e.g. "LCTL_T(KC_ESC)" (a QMK macro alias VIA
+  // doesn't parse; the accepted form is "MT(MOD_LCTL, KC_ESC)") gets back
+  // {ok:true} while the key it touched quietly goes dead. Reject that here
+  // instead of writing it.
+  if (byte === 0 && code.trim().toUpperCase() !== 'KC_NO') {
+    throw new Error(
+      `"${code}" is not a keycode this app's advanced-keycode parser recognizes (it would silently write KC_NO / disabled). ` +
+        `For tap-hold keys use the generic form "MT(MOD_LCTL, KC_ESC)" (mod-tap) or "LT(1, KC_ESC)" (layer-tap), not shorthand macros like LCTL_T(...). ` +
+        `Call list_available_keycodes to see this keyboard's plain keycodes.`,
+    );
+  }
+  return byte;
 }
 
 export function byteToKeycodeString(byte: number): string {

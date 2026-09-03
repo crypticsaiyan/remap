@@ -78,11 +78,11 @@ export function validateRemap(
     let byte: number;
     try {
       byte = keycodeStringToByte(c.keycode);
-    } catch {
+    } catch (e) {
       at(
         'error',
         'unknown-keycode',
-        `unknown keycode ${JSON.stringify(c.keycode)}`,
+        e instanceof Error ? e.message : `unknown keycode ${JSON.stringify(c.keycode)}`,
       );
       return;
     }
