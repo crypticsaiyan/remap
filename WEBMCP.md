@@ -2,6 +2,8 @@
 
 Built for the [OpenAI WebMCP Challenge](https://openai.com/webmcp-challenge/).
 
+**Live:** [remap-xi.vercel.app](https://remap-xi.vercel.app) — needs a QMK/VIA keyboard connected over WebHID, and either Chrome with `chrome://flags/#enable-webmcp-testing`, or the ChatGPT desktop app's built-in browser.
+
 ## What existed before this challenge
 
 This app is a fork of [the-via/app](https://github.com/the-via/app), the official

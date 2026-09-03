@@ -1,12 +1,28 @@
-# [VIA Web Application](https://usevia.app) - Your keyboards best friend
+# remap: a WebMCP-native keyboard configurator
+
+Built for the [OpenAI WebMCP Challenge](https://openai.com/webmcp-challenge/) on top of [VIA](https://usevia.app), the open-source web interface for configuring [QMK](https://qmk.fm)-powered mechanical keyboards.
+
+**Live app:** [remap-xi.vercel.app](https://remap-xi.vercel.app) — open it in Chrome with `chrome://flags/#enable-webmcp-testing`, or in the ChatGPT desktop app's built-in browser, with a QMK/VIA keyboard connected over WebHID.
+
+**Full writeup (architecture, tool catalog, testing steps):** [WEBMCP.md](./WEBMCP.md)
+
+### Why this fits the challenge
+
+A keyboard configurator is a genuinely *collaborative* surface, not a place an agent should act alone: an AI can see and change firmware state, but only the human at the physical keyboard can tell whether a remap "feels right," and only the human can authorize the initial WebHID pairing (a real user gesture, unspoofable by a tool call). remap puts a human and an agent on that same page, sharing one Redux store and one on-screen keyboard, via [`document.modelContext.registerTool`](https://webmachinelearning.github.io/webmcp/) (`src/mcp/registry.ts`):
+
+- **Use case & UX benefit** — a single-key remap writes immediately, the way a click would; redesigning several keys at once stages a reviewable diff (`propose_remap` → `ProposalReview.tsx`) with a required *reason* per change, so an agent's plan is inspectable before anything is written, not a black box.
+- **Human-agent collaboration** — `proposalApproved`/`write_remap_proposal` are only reachable from a human clicking Approve in the UI; no tool file can dispatch them itself. Destructive actions (EEPROM reset, bootloader jump) sit behind a separate confirmation gate. Both are visible live in the always-docked Agent Dock (Status/Activity/Console).
+- **Implementation approach** — 45 WebMCP tools across keymap, lighting/RGB, macros, layout, devices, diagnostics, and app settings, all calling the same Redux thunks and `KeyboardAPI` (raw HID) methods the human-facing UI already used — no parallel code path, no stubs.
+
+See [WEBMCP.md](./WEBMCP.md) for the complete tool catalog and what's prior work (the VIA app) versus new for the challenge (the WebMCP layer).
+
+---
 
 ![android-chrome-192x192](https://user-images.githubusercontent.com/1714072/222621960-ddfb8ee6-a486-4c66-8852-b204ba7c807b.png)
 
 [![Azure Static Web Apps CI/CD](https://github.com/the-via/app/actions/workflows/azure.yml/badge.svg)](https://github.com/the-via/app/actions/workflows/azure.yml)
 
 VIA is a powerful, open-source web-based interface for configuring your [QMK](https://qmk.fm)-powered mechanical keyboard. It allows you to customize your keymaps, create macros, and adjust RGB settings (if it has RGB) on the fly, without needing to recompile your keyboard's firmware. This makes keyboard customization easier and more accessible for everyone.
-
-**This fork ("remap") adds [WebMCP](https://webmachinelearning.github.io/webmcp/) support**, exposing keymap, lighting, macro, and layout tools to AI agents so a human and an agent can configure a keyboard together in the same UI. See [WEBMCP.md](./WEBMCP.md) for the full tool catalog, architecture, and how to test it.
 
 ## Getting VIA to support your keyboard
 
