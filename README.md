@@ -65,17 +65,3 @@ Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch 
 ---
 
 This project is tested with [BrowserStack](https://www.browserstack.com/).
-
-## Looking for an offline app?
-
-@cebby2420 has kindly made a desktop app that does so.
-
-You can find it at [https://github.com/cebby2420/via-desktop](https://github.com/cebby2420/via-desktop).
-
-**NOTE: This project has no official affiliation with VIA, and we cannot provide support for it.**
-
-## Facing Issues?
-
-If you encounter any issues or bugs while using the [VIA web application](https://usevia.app), please report them by opening an issue in the [Issues section](https://github.com/the-via/app/issues). This will help us to track down and resolve problems, and improve the VIA experience for everyone.
-
-Before reporting, please make sure to check if an issue has already been reported. Thank you!
